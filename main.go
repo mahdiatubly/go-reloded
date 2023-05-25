@@ -181,7 +181,7 @@ func extractNum(s string) int64 {
 
 func main() {
 	//This condetionnal statement is used to check if the file exists or not.
-	if len(os.Args) == 2 {
+	if len(os.Args) == 3 {
 		text, err := ioutil.ReadFile(os.Args[1])
 		if err != nil {
 			fmt.Print(err)
@@ -218,17 +218,10 @@ func main() {
 							quote = false
 						}
 					} else {
-						if str[n+1] == ' ' {
-							cStr += string(v)
-							prev = v
-							firstS = true
-							quote = false
-						} else {
-							cStr += string(v) + " "
-							prev = v
-							firstS = true
-							quote = false
-						}
+						cStr += string(v) + " "
+						prev = v
+						firstS = true
+						quote = false
 					}
 				} else if v == '"' && (prev != ' ' || prev != '\'') {
 					if firstD {
@@ -238,7 +231,7 @@ func main() {
 						quote = false
 					} else {
 						if str[n+1] == ' ' {
-							cStr += string(v)
+							cStr += string(v) + " "
 							prev = v
 							firstD = true
 							quote = false
@@ -258,7 +251,7 @@ func main() {
 				if v == '"' || v == '\'' {
 					quote = true
 				}
-			// handling normal letters
+				// handling normal letters
 			} else {
 				if !quote {
 					if countSpace > 0 {
@@ -352,6 +345,18 @@ func main() {
 		}
 
 		output := strings.Join(UpdatedArr, " ")
+		file, err := os.OpenFile(os.Args[2], os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Could not open " + os.Args[2])
+			return
+		}
+		defer file.Close()
+		_, err2 := file.WriteString(output)
+		if err2 != nil {
+			fmt.Println("Could not write text to " + os.Args[2])
+		} else {
+			fmt.Println("Operation successful! Text has been appended to " + os.Args[2])
+		}
 		println(output)
 
 	} else {
